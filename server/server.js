@@ -15,16 +15,17 @@ app.get("/", (req, res) => {
   res.status(200).send(template());
 });
 
-mongoose.connect(
-  process.env.DB_URI,
-  {
+mongoose
+  .connect(process.env.DB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  },
-  () => {
-    console.info("Connected successfully to mongodb server");
-  }
-);
+  })
+  .catch((error) => console.log(error));
+
+const db = mongoose.connection;
+db.on("error", () => console.log("MongoDB connection error"));
+db.once("open", () => console.log("MongoDB connected successfully"));
+db.disconnect();
 
 let port = process.env.PORT || 3000;
 app.listen(port, function onStart(err) {
